@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Planning Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h2>Recommendation:</h2>
+    <p>{{ recommendation }}</p>
+
+    <h2>Retirement Planning Response:</h2>
+    <p>{{ retirement_planning_response }}</p>
+
+    <h2>Budgeting Response:</h2>
+    <p>{{ budgeting_response }}</p>
+
+    <h2>Debt Repayment Strategy Response:</h2>
+    <p>{{ debt_repayment_strategy_response }}</p>
+
+    <h2>Age-Specific Planning Response:</h2>
+    <p>{{ age_specific_planning_response }}</p>
+
+    <h2>Investment Analysis Response:</h2>
+    <p>{{ investment_analysis_response }}</p>
+
+    <h2>Debt Repayment Planner Response:</h2>
+    <p>{{ debt_repayment_response }}</p>
+</body>
+</html>

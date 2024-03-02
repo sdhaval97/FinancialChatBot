@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Planning</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>Financial Planning</h1>
+    <form action="/process" method="POST">
+        <label for="age">Enter your age:</label>
+        <input type="text" id="age" name="age" required><br><br>
+
+        <label for="income">Enter your monthly income:</label>
+        <input type="text" id="income" name="income" required><br><br>
+
+        <label for="expenses">Enter your monthly expenses:</label>
+        <input type="text" id="expenses" name="expenses" required><br><br>
+
+        <label for="retirement_age">Enter your desired retirement age:</label>
+        <input type="text" id="retirement_age" name="retirement_age" required><br><br>
+
+        <label for="desired_income">Enter your desired retirement income:</label>
+        <input type="text" id="desired_income" name="desired_income" required><br><br>
+
+        <label for="rrsp_amount">Enter your RRSP amount:</label>
+        <input type="text" id="rrsp_amount" name="rrsp_amount" required><br><br>
+
+        <label for="tfsa_amount">Enter your TFSA amount:</label>
+        <input type="text" id="tfsa_amount" name="tfsa_amount" required><br><br>
+
+        <label for="non_registered_amount">Enter your non-registered account amount:</label>
+        <input type="text" id="non_registered_amount" name="non_registered_amount" required><br><br>
+
+        <label for="credit_card_debt">Enter your credit card debt amount:</label>
+        <input type="text" id="credit_card_debt" name="credit_card_debt" required><br><br>
+
+        <label for="student_loan_debt">Enter your student loan debt amount:</label>
+        <input type="text" id="student_loan_debt" name="student_loan_debt" required><br><br>
+
+        <label for="personal_loan_debt">Enter your personal loan debt amount:</label>
+        <input type="text" id="personal_loan_debt" name="personal_loan_debt" required><br><br>
+
+        <label for="risk_tolerance">Enter your risk tolerance (e.g., low, medium, high):</label>
+        <input type="text" id="risk_tolerance" name="risk_tolerance" required><br><br>
+
+        <label for="repayment_strategy">Enter your preferred debt repayment strategy (e.g., debt snowball, debt avalanche):</label>
+        <input type="text" id="repayment_strategy" name="repayment_strategy" required><br><br>
+
+        <input type="submit" value="Submit">
+    </form>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
