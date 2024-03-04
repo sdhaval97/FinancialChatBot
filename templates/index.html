@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Financial Planning</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
     <h1>Financial Planning</h1>
-    <form action="/process" method="POST">
+    <form id="financialForm" action="/results" method="POST">
         <label for="age">Enter your age:</label>
         <input type="text" id="age" name="age" required><br><br>
 
@@ -50,6 +50,35 @@
 
         <input type="submit" value="Submit">
     </form>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("financialForm");
+
+            form.addEventListener("submit", function(event) {
+                const ageInput = document.getElementById("age").value.trim();
+                const incomeInput = document.getElementById("income").value.trim();
+                const expensesInput = document.getElementById("expenses").value.trim();
+
+                if (!validateNumberInput(ageInput)) {
+                    alert("Please enter a valid age.");
+                    event.preventDefault();
+                }
+
+                if (!validateNumberInput(incomeInput)) {
+                    alert("Please enter a valid income.");
+                    event.preventDefault();
+                }
+
+                if (!validateNumberInput(expensesInput)) {
+                    alert("Please enter a valid expenses.");
+                    event.preventDefault();
+                }
+            });
+
+            function validateNumberInput(value) {
+                return !isNaN(parseFloat(value)) && isFinite(value) && value !== "";
+            }
+        });
+    </script>
 </body>
 </html>

@@ -1,74 +1,99 @@
-# app.py
 from flask import Flask, render_template, request
 from openai import OpenAI
 
 app = Flask(__name__)
-
-# Initialize OpenAI client
-api_key = "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"
+api_key = ""
 openai_client = OpenAI(api_key=api_key)
 
-# Define functions for different aspects of financial planning
-
-# Your financial planning functions remain the same...
-
-# Define functions for generating responses
-
-# Your response generation functions remain the same...
-
-# Main function to interact with the user and incorporate financial planning aspects
-
-def main():
-    # Get user inputs such as age, goals, income, expenses, debts, etc.
-    age = int(request.form.get("age"))
-    goals = [{'name': 'Goal 1', 'duration': 'long-term'}, {'name': 'Goal 2', 'duration': 'short-term'}]  # Example goals
-    income = float(request.form.get("income"))
-    expenses = float(request.form.get("expenses"))
-    debts = [{'name': 'Credit Card', 'balance': 5000, 'interest_rate': 0.18}, {'name': 'Student Loan', 'balance': 10000, 'interest_rate': 0.05}]  # Example debts
+def portfolio_alignment(age, goals):
+    """
+    Function to align the portfolio with the duration of the client's goals.
+    """
+    recommended_stock_percentage = max(110 - age, 0)
     
-    # Incorporate portfolio alignment function
-    recommendation = portfolio_alignment(age, goals)
+    goal_durations = [goal['duration'] for goal in goals]
     
-    # Incorporate retirement planning function
-    retirement_age = int(request.form.get("retirement_age"))
-    desired_income = float(request.form.get("desired_income"))
-    retirement_planning_response = retirement_planning(retirement_age, desired_income)
+    if all(duration == 'long-term' for duration in goal_durations):
+        recommendation = f"For a client with long-term goals, an aggressive investment strategy is recommended. \
+        The percentage of stocks in the portfolio should be {recommended_stock_percentage}%."
+    else:
+        recommendation = "Recommendation for portfolio alignment based on specific goals."
     
-    # Incorporate budgeting function
-    budgeting_response = budgeting(income, expenses)
-    
-    # Incorporate debt repayment strategy function
-    debt_repayment_strategy_response = debt_repayment_strategy(debts)
-    
-    # Incorporate age-specific financial planning function
-    age_specific_planning_response = age_specific_planning(age)
-    
-    # Get user inputs for investment analysis and debt repayment
-    accounts = {
-        'RRSP': float(request.form.get("rrsp_amount")),
-        'TFSA': float(request.form.get("tfsa_amount")),
-        'non_registered': float(request.form.get("non_registered_amount"))
-    }
-    risk_tolerance = request.form.get("risk_tolerance")
+    return recommendation
 
-    debts = {
-        'credit_cards': float(request.form.get("credit_card_debt")),
-        'student_loans': float(request.form.get("student_loan_debt")),
-        'personal_loans': float(request.form.get("personal_loan_debt"))
-    }
-    repayment_strategy = request.form.get("repayment_strategy")
+def retirement_planning(retirement_age, desired_income):
+    """
+    Function to calculate recommended monthly savings for retirement.
+    """
+    recommended_savings = desired_income / retirement_age
+    
+    return recommended_savings
 
-    # Generate responses for investment analysis, debt repayment, etc.
-    investment_analysis_response = generate_investment_analysis_response(accounts, risk_tolerance)
-    debt_repayment_response = generate_debt_repayment_response(debts, repayment_strategy)
+def budgeting(income, expenses):
+    """
+    Function to provide budgeting recommendations based on income and expenses.
+    """
+    basics = 0.5 * income
+    blissful = 0.2 * income
+    intentional = 0.3 * income
+    void = 0  
+    
+    if expenses > basics:
+        budget_recommendation = "Your expenses exceed the recommended basics (needs) budget. Consider reducing non-essential expenses."
+    else:
+        budget_recommendation = "Your expenses are within the recommended basics (needs) budget."
+    
+    return budget_recommendation
 
-    # Display responses for investment analysis, debt repayment, etc.
-    return render_template('results.html', recommendation=recommendation, retirement_planning_response=retirement_planning_response,
-                           budgeting_response=budgeting_response, debt_repayment_strategy_response=debt_repayment_strategy_response,
-                           age_specific_planning_response=age_specific_planning_response, investment_analysis_response=investment_analysis_response,
-                           debt_repayment_response=debt_repayment_response)
 
-# Routes
+def age_specific_planning(age):
+    """
+    Function to provide age-specific financial planning advice.
+    """
+    if age >= 20 and age <= 30:
+        planning_advice = "Financial planning advice for age group 20-30."
+    elif age >= 30 and age <= 40:
+        planning_advice = "Financial planning advice for age group 30-40."
+    
+    return planning_advice
+
+def generate_investment_analysis_response(accounts, risk_tolerance):
+    prompt = f"""
+    Assess the growth potential of investments in different accounts (RRSP, TFSA, and non-registered). 
+    The user's investment details are as follows:
+    - RRSP: {accounts['RRSP']}
+    - TFSA: {accounts['TFSA']}
+    - Non-registered: {accounts['non_registered']}
+    
+    Provide insights on aligning investments with risk tolerance and suggest strategies for optimizing RRSP, TFSA, and non-registered account investments.
+    """
+    response = openai_client.completions.create(
+        model="gpt-3.5-turbo-instruct",
+        prompt=prompt,
+        max_tokens=500,
+        temperature=0.7,
+        stop=None
+    )
+    return response.choices[0].text.strip()
+
+def generate_debt_repayment_response(debts, strategy):
+    prompt = f"""
+    Calculate efficient strategies for paying off debts, including {strategy} method. 
+    The user's debt details are as follows:
+    - Credit Cards: {debts['credit_cards']}
+    - Student Loans: {debts['student_loans']}
+    - Personal Loans: {debts['personal_loans']}
+    
+    Provide a detailed explanation of the chosen debt repayment strategy, highlighting advantages, disadvantages, and practical tips for implementation.
+    """
+    response = openai_client.completions.create(
+        model="gpt-3.5-turbo-instruct",
+        prompt=prompt,
+        max_tokens=500,
+        temperature=0.7,
+        stop=None
+    )
+    return response.choices[0].text.strip()
 
 @app.route('/')
 def index():
@@ -76,7 +101,41 @@ def index():
 
 @app.route('/results', methods=['POST'])
 def process():
-    return main()
+    age = int(request.form.get("age"))
+    income = float(request.form.get("income"))
+    expenses = float(request.form.get("expenses"))
+    retirement_age = int(request.form.get("retirement_age"))
+    desired_income = float(request.form.get("desired_income"))
+    rrsp_amount = float(request.form.get("rrsp_amount"))
+    tfsa_amount = float(request.form.get("tfsa_amount"))
+    non_registered_amount = float(request.form.get("non_registered_amount"))
+    credit_card_debt = float(request.form.get("credit_card_debt"))
+    student_loan_debt = float(request.form.get("student_loan_debt"))
+    personal_loan_debt = float(request.form.get("personal_loan_debt"))
+    risk_tolerance = request.form.get("risk_tolerance")
+    repayment_strategy = request.form.get("repayment_strategy")
+
+    recommendation = portfolio_alignment(age, goals)  
+    retirement_planning_response = retirement_planning(retirement_age, desired_income)
+    budgeting_response = budgeting(income, expenses)
+    age_specific_planning_response = age_specific_planning(age)
+
+    investment_analysis_response = generate_investment_analysis_response({
+        'RRSP': rrsp_amount,
+        'TFSA': tfsa_amount,
+        'non_registered': non_registered_amount
+    }, risk_tolerance)
+
+    debt_repayment_response = generate_debt_repayment_response({
+        'credit_cards': credit_card_debt,
+        'student_loans': student_loan_debt,
+        'personal_loans': personal_loan_debt
+    }, repayment_strategy)
+
+    return render_template('results.html', recommendation=recommendation, retirement_planning_response=retirement_planning_response,
+                           budgeting_response=budgeting_response, debt_repayment_strategy_response=debt_repayment_strategy_response,
+                           age_specific_planning_response=age_specific_planning_response, investment_analysis_response=investment_analysis_response,
+                           debt_repayment_response=debt_repayment_response)
 
 if __name__ == "__main__":
     app.run(debug=True)
